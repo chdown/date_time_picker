@@ -2,15 +2,16 @@ import 'package:date_time_picker/picker/brn_text_style.dart';
 import 'package:flutter/material.dart';
 
 class BrnPickerConfig {
+  /// 背景颜色
   static Color backgroundColor = Colors.white;
 
-  /// Default value of DatePicker's height.
+  /// picker弹窗默认高度
   static double pickerHeight = 240.0;
 
-  /// Default value of DatePicker's title height.
+  /// 标题高度
   static double titleHeight = 48.0;
 
-  /// Default value of DatePicker's column height.
+  /// 列表项 高度
   static double itemHeight = 48.0;
 
   /// 圆角
@@ -40,29 +41,34 @@ class BrnPickerConfig {
   /// 未选择图标
   static Widget checkedUn = Icon(Icons.radio_button_unchecked, color: dividerColor);
 
+  /// item文字style
   static BrnTextStyle itemTextStyle = BrnTextStyle(
     color: colorTextBase,
     fontSize: fontSizeHead,
   );
 
+  /// item文字选中style
+  static BrnTextStyle itemTextSelectedStyle = BrnTextStyle(
+    color: colorPrimary,
+    fontSize: fontSizeHead,
+    fontWeight: FontWeight.w600,
+  );
+
+  /// 标题文字style
   static BrnTextStyle titleTextStyle = BrnTextStyle(
     color: colorTextBase,
     fontSize: fontSizeSubHead,
   );
 
+  /// 取消文字style
   static BrnTextStyle cancelTextStyle = BrnTextStyle(
     color: colorTextBase,
     fontSize: fontSizeSubHead,
   );
 
+  /// 确认文字style
   static BrnTextStyle confirmTextStyle = BrnTextStyle(
     color: colorPrimary,
     fontSize: fontSizeSubHead,
-  );
-
-  static BrnTextStyle itemTextSelectedStyle = BrnTextStyle(
-    color: colorPrimary,
-    fontSize: fontSizeHead,
-    fontWeight: FontWeight.w600,
   );
 }
