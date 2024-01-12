@@ -22,6 +22,7 @@ class BrnMultiSelectListPicker<T extends BrnMultiSelectBottomPickerItem> extends
   final VoidCallback? onCancel;
   final BrnMultiSelectListPickerItemClick? onItemClick;
   final BrnPickerTitleConfig pickerTitleConfig;
+  final double? maxHeight;
 
   static void show<T extends BrnMultiSelectBottomPickerItem>(
     BuildContext context, {
@@ -31,6 +32,7 @@ class BrnMultiSelectListPicker<T extends BrnMultiSelectBottomPickerItem> extends
     BrnMultiSelectListPickerItemClick? onItemClick,
     BrnPickerTitleConfig pickerTitleConfig = BrnPickerTitleConfig.Default,
     bool isDismissible = true,
+    double? maxHeight,
   }) {
     showModalBottomSheet(
       context: context,
@@ -43,6 +45,7 @@ class BrnMultiSelectListPicker<T extends BrnMultiSelectBottomPickerItem> extends
           onCancel: onCancel,
           onItemClick: onItemClick,
           pickerTitleConfig: pickerTitleConfig,
+          maxHeight: maxHeight,
         );
       },
     );
@@ -56,6 +59,7 @@ class BrnMultiSelectListPicker<T extends BrnMultiSelectBottomPickerItem> extends
     this.onSubmit,
     this.onCancel,
     this.onItemClick,
+    this.maxHeight,
   }) : super(key: key);
 
   @override
@@ -105,7 +109,7 @@ class MultiSelectDialogWidgetState<T extends BrnMultiSelectBottomPickerItem> ext
                 ),
                 LimitedBox(
                     maxWidth: double.infinity,
-                    maxHeight: BrnPickerConfig.pickerHeight,
+                    maxHeight: widget.maxHeight ?? BrnPickerConfig.pickerHeight,
                     child: ListView.builder(shrinkWrap: true, itemBuilder: (context, index) => _buildItem(context, index), itemCount: widget.items.length)),
               ],
             ),
