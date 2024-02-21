@@ -32,5 +32,7 @@ const String datetimeRangePickerDateFormat = 'MM-dd';
 /// Default value of time format
 const String datetimeRangePickerTimeFormat = 'HH:mm';
 
+const String datetimeSecondsRangePickerTimeFormat = 'HH:mm:ss';
+
 /// Default value of datetime format
 const String datetimeRangePickerDatetimeFormat = 'MMdd HH:mm';
