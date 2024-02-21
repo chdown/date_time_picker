@@ -45,6 +45,9 @@ class BrnTimeRangeWidget extends StatefulWidget {
   /// 分钟展示的间隔
   final int minuteDivider;
 
+  /// 分钟展示的间隔
+  final int secondDivider;
+
   /// 内部变量，记录左右两侧是否触发了滚动
   bool _isFirstScroll = false, _isSecondScroll = false;
 
@@ -58,6 +61,7 @@ class BrnTimeRangeWidget extends StatefulWidget {
     this.dateFormat = datetimeRangePickerTimeFormat,
     this.pickerTitleConfig = BrnPickerTitleConfig.Default,
     this.minuteDivider = 1,
+    this.secondDivider = 1,
     this.onCancel,
     this.onChange,
     this.onConfirm,
@@ -69,83 +73,79 @@ class BrnTimeRangeWidget extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => _TimePickerWidgetState(
-      this.minDateTime,
-      this.maxDateTime,
-      this.initialStartDateTime,
-      this.initialEndDateTime,
-      this.minuteDivider);
+      this.minDateTime, this.maxDateTime, this.initialStartDateTime, this.initialEndDateTime, this.dateFormat!, this.minuteDivider, this.secondDivider);
 }
 
 class _TimePickerWidgetState extends State<BrnTimeRangeWidget> {
-  final int _defaultMinuteDivider = 1;
-
-  late int _minuteDivider;
+  late int _minuteDivider = 1, _secondDivider = 1;
   late DateTime _minTime, _maxTime;
-  late int _currStartHour, _currStartMinute;
-  late int _currEndHour, _currEndMinute;
-  late List<int> _hourRange, _minuteRange;
-  late List<int> _startSelectedIndex;
-  late List<int> _endSelectedIndex;
-  late DateTime _startSelectedDateTime;
-  late DateTime _endSelectedDateTime;
+  late int _currStartHour, _currStartMinute, _currStartSecond = 0;
+  late int _currEndHour, _currEndMinute, _currEndSecond = 0;
+  late List<int> _hourRange, _minuteRange, _secondRange = [];
+  late List<int> _startSelectedIndex, _endSelectedIndex;
+  late DateTime _startSelectedDateTime, _endSelectedDateTime;
+  late String _dateFormat;
 
-  _TimePickerWidgetState(DateTime? minTime, DateTime? maxTime,
-      DateTime? initStartTime, DateTime? initEndTime, int minuteDivider) {
-    _initData(minTime, maxTime, initStartTime, initEndTime, minuteDivider);
+  _TimePickerWidgetState(
+    DateTime? minTime,
+    DateTime? maxTime,
+    DateTime? initStartTime,
+    DateTime? initEndTime,
+    String dateFormat,
+    int minuteDivider,
+    int secondDriver,
+  ) {
+    _initData(minTime, maxTime, initStartTime, initEndTime, dateFormat, minuteDivider, secondDriver);
   }
 
-  void _initData(DateTime? minTime, DateTime? maxTime, DateTime? initStartTime,
-      DateTime? initEndTime, int? minuteDivider) {
-    if (minTime == null) {
-      minTime = DateTime.parse(datePickerMinDatetime);
-    }
-    if (maxTime == null) {
-      maxTime = DateTime.parse(datePickerMaxDatetime);
-    }
+  void _initData(
+    DateTime? minTime,
+    DateTime? maxTime,
+    DateTime? initStartTime,
+    DateTime? initEndTime,
+    String dateFormat,
+    int? minuteDivider,
+    int? secondDriver,
+  ) {
+    _dateFormat = dateFormat;
+    if (minuteDivider == null || minuteDivider <= 0) _minuteDivider = 1;
+    if (secondDriver == null || secondDriver <= 0) _secondDivider = 1;
+
+    minTime ??= DateTime.parse(datePickerMinDatetime);
+    maxTime ??= DateTime.parse(datePickerMaxDatetime);
     DateTime now = DateTime.now();
-    this._minTime = DateTime(now.year, now.month, now.day, minTime.hour,
-        minTime.minute, minTime.second);
-    this._maxTime = DateTime(now.year, now.month, now.day, maxTime.hour,
-        maxTime.minute, maxTime.second);
+    _minTime = DateTime(now.year, now.month, now.day, minTime.hour, minTime.minute, minTime.second);
+    _maxTime = DateTime(now.year, now.month, now.day, maxTime.hour, maxTime.minute, maxTime.second);
 
-    if (initStartTime == null) {
-      // init time is now
-      initStartTime = DateTime.now();
-    }
+    initStartTime ??= DateTime.now();
+    initEndTime ??= DateTime.now();
 
-    if (initEndTime == null) {
-      // init time is now
-      initEndTime = DateTime.now();
-    }
+    _currStartHour = initStartTime.hour;
+    _hourRange = _calcHourRange();
+    _currStartHour = min(max(_hourRange.first, _currStartHour), _hourRange.last);
+    _currEndHour = initEndTime.hour;
+    _currEndHour = min(_currEndHour, _hourRange.last);
 
-    if (minuteDivider == null || minuteDivider <= 0) {
-      this._minuteDivider = _defaultMinuteDivider;
-    } else {
-      this._minuteDivider = minuteDivider;
-    }
-
-    this._currStartHour = initStartTime.hour;
-    this._hourRange = _calcHourRange();
-    this._currStartHour =
-        min(max(_hourRange.first, _currStartHour), _hourRange.last);
-
-    this._currStartMinute = initStartTime.minute;
-    this._minuteRange = _calcMinuteRange();
-    this._currStartMinute =
-        min(max(_minuteRange.first, _currStartMinute), _minuteRange.last);
+    _currStartMinute = initStartTime.minute;
+    _minuteRange = _calcMinuteRange();
+    _currStartMinute = min(max(_minuteRange.first, _currStartMinute), _minuteRange.last);
     _currStartMinute -= _currStartMinute % _minuteDivider;
-
-    this._currEndHour = initEndTime.hour;
-    this._currEndHour = min(_currEndHour, _hourRange.last);
-
-    this._currEndMinute = initEndTime.minute;
-    this._currEndMinute = min(_currEndMinute, _minuteRange.last);
+    _currEndMinute = initEndTime.minute;
+    _currEndMinute = min(_currEndMinute, _minuteRange.last);
     _currEndMinute -= _currEndMinute % _minuteDivider;
 
-    _startSelectedDateTime = DateTime(
-        now.year, now.month, now.day, _currStartHour, _currStartMinute);
-    _endSelectedDateTime =
-        DateTime(now.year, now.month, now.day, _currEndHour, _currEndMinute);
+    if (_dateFormat.contains("s")) {
+      _currStartSecond = initStartTime.second;
+      _secondRange = _calcSecondRange();
+      _currStartSecond = min(max(_secondRange.first, _currStartSecond), _secondRange.last);
+      _currStartSecond -= _currStartSecond % _secondDivider;
+      _currEndSecond = initEndTime.second;
+      _currEndSecond = min(_currEndSecond, _secondRange.last);
+      _currEndSecond -= _currEndSecond % _minuteDivider;
+    }
+
+    _startSelectedDateTime = DateTime(now.year, now.month, now.day, _currStartHour, _currStartMinute, _currStartSecond);
+    _endSelectedDateTime = DateTime(now.year, now.month, now.day, _currEndHour, _currEndMinute, _currEndSecond);
 
     _startSelectedIndex = _calcStartSelectIndexList(_minuteDivider);
     _endSelectedIndex = _calcEndSelectIndexList(_minuteDivider);
@@ -153,11 +153,9 @@ class _TimePickerWidgetState extends State<BrnTimeRangeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    _initData(_minTime, _maxTime, _startSelectedDateTime, _endSelectedDateTime,
-        _minuteDivider);
+    _initData(_minTime, _maxTime, _startSelectedDateTime, _endSelectedDateTime, _dateFormat, _minuteDivider, _secondDivider);
     return GestureDetector(
-      child: Material(
-          color: Colors.transparent, child: _renderPickerView(context)),
+      child: Material(color: Colors.transparent, child: _renderPickerView(context)),
     );
   }
 
@@ -166,8 +164,7 @@ class _TimePickerWidgetState extends State<BrnTimeRangeWidget> {
     Widget pickerWidget = _renderDatePickerWidget();
 
     // display the title widget
-    if (widget.pickerTitleConfig.title != null ||
-        widget.pickerTitleConfig.showTitle) {
+    if (widget.pickerTitleConfig.title != null || widget.pickerTitleConfig.showTitle) {
       Widget titleWidget = BrnPickerTitle(
         pickerTitleConfig: widget.pickerTitleConfig,
         onCancel: () => _onPressedCancel(),
@@ -189,8 +186,7 @@ class _TimePickerWidgetState extends State<BrnTimeRangeWidget> {
   /// pressed confirm widget
   void _onPressedConfirm() {
     if (widget.onConfirm != null) {
-      widget.onConfirm!(_startSelectedDateTime, _endSelectedDateTime,
-          _startSelectedIndex, _endSelectedIndex);
+      widget.onConfirm!(_startSelectedDateTime, _endSelectedDateTime, _startSelectedIndex, _endSelectedIndex);
     }
     Navigator.pop(context);
   }
@@ -211,80 +207,88 @@ class _TimePickerWidgetState extends State<BrnTimeRangeWidget> {
     }
 
     List<Widget> pickers = [];
-    pickers.add(Expanded(
+    pickers.add(
+      Expanded(
         flex: 6,
         child: Container(
-            height: BrnPickerConfig.pickerHeight,
-            color: BrnPickerConfig.backgroundColor,
-            child: BrnTimeRangeSideWidget(
-              key: firstGlobalKey,
-              dateFormat: widget.dateFormat,
-              minDateTime: _minTime,
-              maxDateTime: _maxTime,
-              initialStartDateTime: _startSelectedDateTime,
-              minuteDivider: _minuteDivider,
-              onInitSelectChange: (widget.isLimitTimeRange)
-                  ? (DateTime selectedDateTime, List<int> selected) {
-                      _startSelectedDateTime = selectedDateTime;
-                      _startSelectedIndex = selected;
-                    }
-                  : null,
-              onChange: (DateTime selectedDateTime, List<int> selected) {
-                setState(() {
-                  _startSelectedDateTime = selectedDateTime;
-                  _startSelectedIndex = selected;
-                  widget._isFirstScroll = true;
-                });
-              },
-            ))));
+          height: BrnPickerConfig.pickerHeight,
+          color: BrnPickerConfig.backgroundColor,
+          child: BrnTimeRangeSideWidget(
+            key: firstGlobalKey,
+            dateFormat: widget.dateFormat,
+            minDateTime: _minTime,
+            maxDateTime: _maxTime,
+            initialStartDateTime: _startSelectedDateTime,
+            minuteDivider: _minuteDivider,
+            secondDivider: _secondDivider,
+            onInitSelectChange: (widget.isLimitTimeRange)
+                ? (DateTime selectedDateTime, List<int> selected) {
+                    _startSelectedDateTime = selectedDateTime;
+                    _startSelectedIndex = selected;
+                  }
+                : null,
+            onChange: (DateTime selectedDateTime, List<int> selected) {
+              setState(() {
+                _startSelectedDateTime = selectedDateTime;
+                _startSelectedIndex = selected;
+                widget._isFirstScroll = true;
+              });
+            },
+          ),
+        ),
+      ),
+    );
     pickers.add(_renderDatePickerMiddleColumnComponent());
-    pickers.add(Expanded(
+    pickers.add(
+      Expanded(
         flex: 6,
         child: Container(
-            height: BrnPickerConfig.pickerHeight,
-            color: BrnPickerConfig.backgroundColor,
-            child: BrnTimeRangeSideWidget(
-              key: secondGlobalKey,
-              dateFormat: widget.dateFormat,
-              minDateTime:
-                  (widget.isLimitTimeRange) ? _startSelectedDateTime : _minTime,
-              maxDateTime: _maxTime,
-              initialStartDateTime: (widget.isLimitTimeRange)
-                  ? _endSelectedDateTime.compareTo(_startSelectedDateTime) > 0
-                      ? _endSelectedDateTime
-                      : _startSelectedDateTime
-                  : _endSelectedDateTime,
-              minuteDivider: _minuteDivider,
-              onInitSelectChange: (widget.isLimitTimeRange)
-                  ? (DateTime selectedDateTime, List<int> selected) {
-                      _endSelectedDateTime = selectedDateTime;
-                      _endSelectedIndex = selected;
-                    }
-                  : null,
-              onChange: (DateTime selectedDateTime, List<int> selected) {
-                setState(() {
-                  _endSelectedDateTime = selectedDateTime;
-                  _endSelectedIndex = selected;
-                  widget._isSecondScroll = true;
-                });
-              },
-            ))));
-    return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween, children: pickers);
+          height: BrnPickerConfig.pickerHeight,
+          color: BrnPickerConfig.backgroundColor,
+          child: BrnTimeRangeSideWidget(
+            key: secondGlobalKey,
+            dateFormat: widget.dateFormat,
+            minDateTime: (widget.isLimitTimeRange) ? _startSelectedDateTime : _minTime,
+            maxDateTime: _maxTime,
+            initialStartDateTime: (widget.isLimitTimeRange)
+                ? _endSelectedDateTime.compareTo(_startSelectedDateTime) > 0
+                    ? _endSelectedDateTime
+                    : _startSelectedDateTime
+                : _endSelectedDateTime,
+            minuteDivider: _minuteDivider,
+            secondDivider: _secondDivider,
+            onInitSelectChange: (widget.isLimitTimeRange)
+                ? (DateTime selectedDateTime, List<int> selected) {
+                    _endSelectedDateTime = selectedDateTime;
+                    _endSelectedIndex = selected;
+                  }
+                : null,
+            onChange: (DateTime selectedDateTime, List<int> selected) {
+              setState(() {
+                _endSelectedDateTime = selectedDateTime;
+                _endSelectedIndex = selected;
+                widget._isSecondScroll = true;
+              });
+            },
+          ),
+        ),
+      ),
+    );
+    return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: pickers);
   }
 
   /// calculate selected index list
   List<int> _calcStartSelectIndexList(int minuteDivider) {
     int hourIndex = _currStartHour - _hourRange.first;
     int minuteIndex = (_currStartMinute - _minuteRange.first) ~/ minuteDivider;
-    return [hourIndex, minuteIndex];
+    return [hourIndex, minuteIndex, if (_dateFormat.contains("s")) ((_currStartSecond - _secondRange.first) ~/ _secondDivider)];
   }
 
   /// calculate selected index list
   List<int> _calcEndSelectIndexList(int minuteDivider) {
     int hourIndex = _currEndHour - _hourRange.first;
     int minuteIndex = (_currEndMinute - _minuteRange.first) ~/ minuteDivider;
-    return [hourIndex, minuteIndex];
+    return [hourIndex, minuteIndex, if (_dateFormat.contains("s")) ((_currEndSecond - _secondRange.first) ~/ _secondDivider)];
   }
 
   /// calculate the range of hour
@@ -297,19 +301,21 @@ class _TimePickerWidgetState extends State<BrnTimeRangeWidget> {
     int minMinute = 0, maxMinute = 59;
     int minHour = _minTime.hour;
     int maxHour = _maxTime.hour;
-    if (currHour == null) {
-      currHour = _currStartHour;
-    }
-
-    if (minHour == currHour) {
-      // selected minimum hour, limit minute range
-      minMinute = _minTime.minute;
-    }
-    if (maxHour == currHour) {
-      // selected maximum hour, limit minute range
-      maxMinute = _maxTime.minute;
-    }
+    currHour ??= _currStartHour;
+    if (minHour == currHour) minMinute = _minTime.minute;
+    if (maxHour == currHour) maxMinute = _maxTime.minute;
     return [minMinute, maxMinute];
+  }
+
+  /// calculate the range of minute
+  List<int> _calcSecondRange({currMinute}) {
+    int minSecond = 0, maxSecond = 59;
+    int minMinute = _minTime.minute;
+    int maxMinute = _maxTime.minute;
+    currMinute ??= _currStartMinute;
+    if (minMinute == currMinute) minSecond = _minTime.second;
+    if (maxMinute == currMinute) maxSecond = _maxTime.second;
+    return [minSecond, maxSecond];
   }
 
   Widget _renderDatePickerMiddleColumnComponent() {
@@ -317,9 +323,7 @@ class _TimePickerWidgetState extends State<BrnTimeRangeWidget> {
       flex: 1,
       child: Container(
         height: BrnPickerConfig.pickerHeight,
-        decoration: BoxDecoration(
-            border: Border(left: BorderSide.none, right: BorderSide.none),
-            color: BrnPickerConfig.backgroundColor),
+        decoration: BoxDecoration(border: const Border(left: BorderSide.none, right: BorderSide.none), color: BrnPickerConfig.backgroundColor),
         child: BrnPicker.builder(
           backgroundColor: BrnPickerConfig.backgroundColor,
           lineColor: BrnPickerConfig.dividerColor,

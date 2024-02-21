@@ -101,6 +101,7 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
   final DateRangeValueCallback? onChange;
   final DateRangeValueCallback? onConfirm;
   final int minuteDivider;
+  final int secondDriver;
   final ThemeData? theme;
   final bool? isDismissible;
 
@@ -111,6 +112,7 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
     this.initialStartDateTime,
     this.initialEndDateTime,
     this.minuteDivider = 1,
+    this.secondDriver = 1,
     this.dateFormat,
     this.pickerMode = BrnDateTimeRangePickerMode.date,
     this.pickerTitleConfig = BrnPickerTitleConfig.Default,
@@ -198,6 +200,7 @@ class _DatePickerComponent extends StatelessWidget {
           initialStartDateTime: route.initialStartDateTime,
           initialEndDateTime: route.initialEndDateTime,
           minuteDivider: route.minuteDivider,
+          secondDivider: route.secondDriver,
           dateFormat: route.dateFormat,
           pickerTitleConfig: route.pickerTitleConfig,
           onCancel: route.onCancel,
