@@ -87,6 +87,7 @@ class _TimePickerWidgetState extends State<BrnTimeRangeSideWidget> {
     _dateFormat = dateFormat;
     if (minuteDivider == null || minuteDivider <= 0) _minuteDivider = 1;
     if (secondDivider == null || secondDivider <= 0) _secondDivider = 1;
+    if (secondDivider == null || secondDivider <= 0) _secondDivider = 1;
     minTime ??= DateTime.parse(datePickerMinDatetime);
     maxTime ??= DateTime.parse(datePickerMaxDatetime);
     _minTime = minTime;

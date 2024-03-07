@@ -1,6 +1,5 @@
 library lib;
 
-export 'picker/brn_bottom_picker.dart';
 export 'picker/brn_multi_picker.dart';
 export 'picker/base/brn_picker_config.dart';
 export 'picker/base/brn_picker_title.dart';
