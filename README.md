@@ -17,7 +17,6 @@ dependencies:
 
 | 说明                                                                               |                                                              |
 |----------------------------------------------------------------------------------| ------------------------------------------------------------ |
-| [Bottom Picker]( /doc/BrnBottomPicker/BrnBottomPicker.md )                        | 支持高度的自定义（内容、头部），解决了 picker 中有输入框，键盘遮挡等问题 |
 | [Date Picker](/doc/BrnDatePicker/BrnDatePicker.md )                               | 【单个】时间点的情况                                         |
 | [DateRange Picker]( /doc/BrnDateRangePicker/BrnDateRangePicker.md )               | 时间范围选择的情况                                           |
 | [MultiData Picker]( /doc/BrnMultiColumnPicker/BrnMultiColumnPicker.md )           | 单列或者多列数据选择的                                       |
