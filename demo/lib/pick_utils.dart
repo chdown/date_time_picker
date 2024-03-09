@@ -1,4 +1,8 @@
+import 'package:date_time_picker/export.dart';
+import 'package:date_time_picker/picker/base/brn_picker.dart';
 import 'package:date_time_picker/picker/base/brn_picker_title_config.dart';
+import 'package:date_time_picker/picker/brn_multi_picker.dart';
+import 'package:date_time_picker/picker/multi_range_picker/brn_multi_column_list.dart';
 import 'package:date_time_picker/picker/time_picker/date_range_picker/brn_date_range_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -19,12 +23,11 @@ class PickUtils {
     BrnPickerTitleConfig pickerTitleConfig = const BrnPickerTitleConfig(titleContent: "选择时间范围");
     BrnDateRangePicker.showDatePicker(
       context,
-      isLimitTimeRange: false,
       pickerMode: BrnDateTimeRangePickerMode.time,
       minuteDivider: 1,
       pickerTitleConfig: pickerTitleConfig,
       dateFormat: dateFormat,
-      onConfirm: (startDateTime, endDateTime, startSelectedIndex, endSelectedIndex) {
+      onConfirm: (startDateTime, endDateTime, startSelectedIndex, endSelectedIndex, {timeRangeCustomIndex}) {
         resultFormat ??= dateFormat;
       },
     );

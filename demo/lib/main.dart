@@ -32,13 +32,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
-
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
@@ -49,15 +46,12 @@ class _MyHomePageState extends State<MyHomePage> {
             const Text(
               'You have pushed the button this many times:',
             ),
-
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          PickUtils.showTimeRange(context, null, null, (startTime, endTime) {
-
-          });
+          PickUtils.showTimeRange(context, null, null, dateFormat: 'HH:mm:ss', (startTime, endTime) {});
         },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
