@@ -26,6 +26,8 @@ class PickUtils {
       pickerMode: BrnDateTimeRangePickerMode.time,
       minuteDivider: 1,
       pickerTitleConfig: pickerTitleConfig,
+      timeRangeCustomIndex: 1,
+      timeRangeCustomList: ['本日','次日'],
       dateFormat: dateFormat,
       onConfirm: (startDateTime, endDateTime, startSelectedIndex, endSelectedIndex, {timeRangeCustomIndex}) {
         resultFormat ??= dateFormat;

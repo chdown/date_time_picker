@@ -53,6 +53,7 @@ class BrnDateRangePicker {
     DateRangeValueCallback? onChange,
     DateRangeValueCallback? onConfirm,
     List<String> timeRangeCustomList = const [],
+    int timeRangeCustomIndex = 0,
   }) {
     // handle the range of datetime
     if (minDateTime == null) {
@@ -88,6 +89,7 @@ class BrnDateRangePicker {
         isDismissible: isDismissible,
         barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
         timeRangeCustomList: timeRangeCustomList,
+        timeRangeCustomIndex: timeRangeCustomIndex,
       ),
     ).whenComplete(onClose ?? () {});
   }
@@ -107,6 +109,7 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
   final ThemeData? theme;
   final bool? isDismissible;
   final List<String> timeRangeCustomList;
+  final int timeRangeCustomIndex;
 
   _DatePickerRoute({
     this.minDateTime,
@@ -126,6 +129,7 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
     this.barrierLabel,
     this.isDismissible,
     this.timeRangeCustomList = const [],
+    this.timeRangeCustomIndex = 0,
     RouteSettings? settings,
   }) : super(settings: settings);
 
@@ -211,6 +215,7 @@ class _DatePickerComponent extends StatelessWidget {
           onChange: route.onChange,
           onConfirm: route.onConfirm,
           timeRangeCustomList: route.timeRangeCustomList,
+          timeRangeCustomIndex: route.timeRangeCustomIndex,
         );
         break;
     }

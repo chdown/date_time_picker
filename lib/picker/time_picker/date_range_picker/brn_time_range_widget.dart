@@ -53,6 +53,7 @@ class BrnTimeRangeWidget extends StatefulWidget {
 
   /// 是否展示天数选择
   final List<String> timeRangeCustomList;
+  final int timeRangeCustomIndex;
 
   BrnTimeRangeWidget({
     Key? key,
@@ -69,6 +70,7 @@ class BrnTimeRangeWidget extends StatefulWidget {
     this.onChange,
     this.onConfirm,
     this.timeRangeCustomList = const [],
+    this.timeRangeCustomIndex = 0,
   }) : super(key: key) {
     DateTime minTime = minDateTime ?? DateTime.parse(datePickerMinDatetime);
     DateTime maxTime = maxDateTime ?? DateTime.parse(datePickerMaxDatetime);
@@ -76,8 +78,17 @@ class BrnTimeRangeWidget extends StatefulWidget {
   }
 
   @override
-  State<StatefulWidget> createState() => _TimePickerWidgetState(this.minDateTime, this.maxDateTime, this.initialStartDateTime, this.initialEndDateTime,
-      this.dateFormat!, this.minuteDivider, this.secondDivider, this.isLimitTimeRange);
+  State<StatefulWidget> createState() => _TimePickerWidgetState(
+        this.minDateTime,
+        this.maxDateTime,
+        this.initialStartDateTime,
+        this.initialEndDateTime,
+        this.dateFormat!,
+        this.minuteDivider,
+        this.secondDivider,
+        this.isLimitTimeRange,
+        this.timeRangeCustomIndex,
+      );
 }
 
 class _TimePickerWidgetState extends State<BrnTimeRangeWidget> {
@@ -89,7 +100,8 @@ class _TimePickerWidgetState extends State<BrnTimeRangeWidget> {
   late List<int> _startSelectedIndex, _endSelectedIndex;
   late DateTime _startSelectedDateTime, _endSelectedDateTime;
   late String _dateFormat;
-  int timeRangeCustomIndex = 0;
+  int _timeRangeCustomIndex = 0;
+  late FixedExtentScrollController _timeRangeCustomCtrl;
   bool _isLimitTimeRange = false;
 
   _TimePickerWidgetState(
@@ -101,8 +113,9 @@ class _TimePickerWidgetState extends State<BrnTimeRangeWidget> {
     int minuteDivider,
     int secondDriver,
     bool isLimitTimeRange,
+    int timeRangeCustomIndex,
   ) {
-    _initData(minTime, maxTime, initStartTime, initEndTime, dateFormat, minuteDivider, secondDriver, isLimitTimeRange);
+    _initData(minTime, maxTime, initStartTime, initEndTime, dateFormat, minuteDivider, secondDriver, isLimitTimeRange, timeRangeCustomIndex);
   }
 
   void _initData(
@@ -114,8 +127,11 @@ class _TimePickerWidgetState extends State<BrnTimeRangeWidget> {
     int? minuteDivider,
     int? secondDriver,
     bool isLimitTimeRange,
+    int timeRangeCustomIndex,
   ) {
     _isLimitTimeRange = isLimitTimeRange;
+    _timeRangeCustomIndex = timeRangeCustomIndex;
+    _timeRangeCustomCtrl =  FixedExtentScrollController(initialItem: _timeRangeCustomIndex);
     _dateFormat = dateFormat;
     if (minuteDivider == null || minuteDivider <= 0) _minuteDivider = 1;
     if (secondDriver == null || secondDriver <= 0) _secondDivider = 1;
@@ -162,7 +178,17 @@ class _TimePickerWidgetState extends State<BrnTimeRangeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    _initData(_minTime, _maxTime, _startSelectedDateTime, _endSelectedDateTime, _dateFormat, _minuteDivider, _secondDivider, _isLimitTimeRange);
+    _initData(
+      _minTime,
+      _maxTime,
+      _startSelectedDateTime,
+      _endSelectedDateTime,
+      _dateFormat,
+      _minuteDivider,
+      _secondDivider,
+      _isLimitTimeRange,
+      _timeRangeCustomIndex,
+    );
     return GestureDetector(
       child: Material(color: Colors.transparent, child: _renderPickerView(context)),
     );
@@ -195,7 +221,7 @@ class _TimePickerWidgetState extends State<BrnTimeRangeWidget> {
   /// pressed confirm widget
   void _onPressedConfirm() {
     if (widget.onConfirm != null) {
-      widget.onConfirm!(_startSelectedDateTime, _endSelectedDateTime, _startSelectedIndex, _endSelectedIndex, timeRangeCustomIndex: timeRangeCustomIndex);
+      widget.onConfirm!(_startSelectedDateTime, _endSelectedDateTime, _startSelectedIndex, _endSelectedIndex, timeRangeCustomIndex: _timeRangeCustomIndex);
     }
     Navigator.pop(context);
   }
@@ -362,6 +388,7 @@ class _TimePickerWidgetState extends State<BrnTimeRangeWidget> {
         height: BrnPickerConfig.pickerHeight,
         decoration: BoxDecoration(border: const Border(left: BorderSide.none, right: BorderSide.none), color: BrnPickerConfig.backgroundColor),
         child: BrnPicker.builder(
+          scrollController: _timeRangeCustomCtrl,
           backgroundColor: BrnPickerConfig.backgroundColor,
           lineColor: BrnPickerConfig.dividerColor,
           itemExtent: BrnPickerConfig.itemHeight,
@@ -372,13 +399,15 @@ class _TimePickerWidgetState extends State<BrnTimeRangeWidget> {
               alignment: Alignment.center,
               child: Text(
                 widget.timeRangeCustomList[index],
-                style: index == timeRangeCustomIndex ? BrnPickerConfig.itemTextSelectedStyle.generateTextStyle() : BrnPickerConfig.itemTextStyle.generateTextStyle(),
+                style: index == _timeRangeCustomIndex
+                    ? BrnPickerConfig.itemTextSelectedStyle.generateTextStyle()
+                    : BrnPickerConfig.itemTextStyle.generateTextStyle(),
               ),
             );
           },
           onSelectedItemChanged: (int value) {
             setState(() {
-              timeRangeCustomIndex = value;
+              _timeRangeCustomIndex = value;
               _isLimitTimeRange = value == 0;
               widget._isFirstScroll = true;
             });
