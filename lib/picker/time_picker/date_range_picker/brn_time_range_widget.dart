@@ -129,9 +129,9 @@ class _TimePickerWidgetState extends State<BrnTimeRangeWidget> {
     bool isLimitTimeRange,
     int timeRangeCustomIndex,
   ) {
-    _isLimitTimeRange = isLimitTimeRange;
+    _isLimitTimeRange = isLimitTimeRange && _timeRangeCustomIndex == 0;
     _timeRangeCustomIndex = timeRangeCustomIndex;
-    _timeRangeCustomCtrl =  FixedExtentScrollController(initialItem: _timeRangeCustomIndex);
+    _timeRangeCustomCtrl = FixedExtentScrollController(initialItem: _timeRangeCustomIndex);
     _dateFormat = dateFormat;
     if (minuteDivider == null || minuteDivider <= 0) _minuteDivider = 1;
     if (secondDriver == null || secondDriver <= 0) _secondDivider = 1;
