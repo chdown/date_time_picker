@@ -22,11 +22,39 @@ class PickUtils {
       minuteDivider: 1,
       pickerTitleConfig: pickerTitleConfig,
       timeRangeCustomIndex: 1,
-      timeRangeCustomList: ['本日','次日'],
+      timeRangeCustomList: ['本日', '次日'],
       dateFormat: dateFormat,
       onConfirm: (startDateTime, endDateTime, startSelectedIndex, endSelectedIndex, {timeRangeCustomIndex}) {
         resultFormat ??= dateFormat;
       },
     );
+  }
+
+  /// 单列选择
+  static showItem(
+    BuildContext context,
+    String title,
+    String? defaultValue,
+    List<String> dataList,
+    Function(int index) onTap, {
+    double? pickerHeight,
+  }) {
+    List<BrnMultiDataPickerEntity> list = [];
+    for (var value in dataList) {
+      list.add(BrnMultiDataPickerEntity(text: value, value: value));
+    }
+    int index = dataList.indexOf(defaultValue ?? "");
+    BrnMultiDataPicker(
+      context: context,
+      delegate: BrnDefaultMultiDataPickerDelegate(
+        data: list,
+        firstSelectedIndex: index < 0 ? 0 : index,
+      ),
+      title: title,
+      confirmClick: (selectedIndexList) {
+        if (selectedIndexList.isNotEmpty) onTap(selectedIndexList[0]);
+      },
+      pickerHeight: BrnPickerConfig.itemHeight * 8,
+    ).show();
   }
 }

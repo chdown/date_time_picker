@@ -149,7 +149,7 @@ class _BrnMultiDataPickerState extends State<BrnMultiDataPicker> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: BrnPickerConfig.pickerHeight + BrnPickerConfig.titleHeight,
+      height: (widget.pickerHeight ?? BrnPickerConfig.pickerHeight) + BrnPickerConfig.titleHeight,
       child: Material(
         type: MaterialType.transparency,
         child: new Column(
@@ -190,7 +190,7 @@ class _BrnMultiDataPickerState extends State<BrnMultiDataPicker> {
   //选择的内容widget
   Widget _configMultiDataPickerWidget() {
     return Container(
-        height: widget.pickerHeight ?? BrnPickerConfig.pickerHeight,
+        height: (widget.pickerHeight ?? BrnPickerConfig.pickerHeight),
         color: BrnPickerConfig.backgroundColor,
         child: Row(mainAxisSize: MainAxisSize.max, children: widget.pickerTitles != null ? _pickersWithTitle() : _pickers()));
   }

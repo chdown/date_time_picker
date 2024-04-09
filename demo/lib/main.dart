@@ -51,7 +51,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          PickUtils.showTimeRange(context, null, null, dateFormat: 'HH:mm:ss', (startTime, endTime) {});
+          // PickUtils.showTimeRange(context, null, null, dateFormat: 'HH:mm:ss', (startTime, endTime) {});
+          PickUtils.showItem(context, '提示', '', ['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1',], (index) {
+
+          },pickerHeight: 480);
         },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
