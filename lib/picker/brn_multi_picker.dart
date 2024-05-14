@@ -1,3 +1,4 @@
+import 'package:date_time_picker/utils/brn_tools.dart';
 import 'package:flutter/material.dart';
 
 import 'base/brn_picker.dart';
@@ -258,11 +259,19 @@ class _BrnMultiDataPickerState extends State<BrnMultiDataPicker> {
           List<Widget> list = [];
           for (int i = 0; i < widget.delegate.numberOfRowsInComponent(component); i++) {
             list.add(Center(
-              child: Text(
-                widget.delegate.titleForRowInComponent(component, i),
-                style: _selectedIndexList[component] == i
-                    ? BrnPickerConfig.itemTextSelectedStyle.generateTextStyle()
-                    : BrnPickerConfig.itemTextStyle.generateTextStyle(),
+              child: BrunoTools.buildClickWidget(
+                Container(
+                  alignment: Alignment.center,
+                  width: double.infinity,
+                  child: Text(
+                    widget.delegate.titleForRowInComponent(component, i),
+                    style: _selectedIndexList[component] == i
+                        ? BrnPickerConfig.itemTextSelectedStyle.generateTextStyle()
+                        : BrnPickerConfig.itemTextStyle.generateTextStyle(),
+                  ),
+                ),
+                widget.controllers[component],
+                i,
               ),
             ));
           }

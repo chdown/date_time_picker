@@ -1,3 +1,4 @@
+import 'package:date_time_picker/utils/brn_tools.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
@@ -67,8 +68,8 @@ class BrnPicker extends StatefulWidget {
     required this.onSelectedItemChanged,
     required List<Widget> children,
     bool looping = false,
-  })  : assert(diameterRatio > 0.0,
-            RenderListWheelViewport.diameterRatioZeroMessage),
+  })
+      : assert(diameterRatio > 0.0, RenderListWheelViewport.diameterRatioZeroMessage),
         assert(magnification > 0),
         assert(itemExtent > 0),
         assert(squeeze > 0),
@@ -108,13 +109,16 @@ class BrnPicker extends StatefulWidget {
     required this.onSelectedItemChanged,
     required IndexedWidgetBuilder itemBuilder,
     int? childCount,
-  })  : assert(diameterRatio > 0.0,
-            RenderListWheelViewport.diameterRatioZeroMessage),
+  })
+      : assert(diameterRatio > 0.0, RenderListWheelViewport.diameterRatioZeroMessage),
         assert(magnification > 0),
         assert(itemExtent > 0),
         assert(squeeze > 0),
         childDelegate = ListWheelChildBuilderDelegate(
-            builder: itemBuilder, childCount: childCount),
+            builder: (context, index) {
+              return BrunoTools.buildClickWidget(itemBuilder(context, index), scrollController, index);
+            },
+            childCount: childCount),
         super(key: key);
 
   /// Relative ratio between this picker's height and the simulated cylinder's diameter.
@@ -197,8 +201,7 @@ class _CupertinoPickerState extends State<BrnPicker> {
   void didUpdateWidget(BrnPicker oldWidget) {
     if (widget.scrollController != null && oldWidget.scrollController == null) {
       _controller = null;
-    } else if (widget.scrollController == null &&
-        oldWidget.scrollController != null) {
+    } else if (widget.scrollController == null && oldWidget.scrollController != null) {
       assert(_controller == null);
       _controller = FixedExtentScrollController();
     }
@@ -214,8 +217,7 @@ class _CupertinoPickerState extends State<BrnPicker> {
   void _handleSelectedItemChanged(int index) {
     // Only the haptic engine hardware on iOS devices would produce the
     // intended effects.
-    if (defaultTargetPlatform == TargetPlatform.iOS &&
-        index != _lastHapticIndex) {
+    if (defaultTargetPlatform == TargetPlatform.iOS && index != _lastHapticIndex) {
       _lastHapticIndex = index;
       HapticFeedback.selectionClick();
     }
@@ -268,9 +270,7 @@ class _CupertinoPickerState extends State<BrnPicker> {
   /// Makes the magnifier lens look so that the colors are normal through
   /// the lens and partially grayed out around it.
   Widget _buildMagnifierScreen() {
-    final Color foreground = widget.backgroundColor.withAlpha(
-        (widget.backgroundColor.alpha * _kForegroundScreenOpacityFraction)
-            .toInt());
+    final Color foreground = widget.backgroundColor.withAlpha((widget.backgroundColor.alpha * _kForegroundScreenOpacityFraction).toInt());
 
     return IgnorePointer(
       child: Column(
@@ -285,10 +285,8 @@ class _CupertinoPickerState extends State<BrnPicker> {
               border: Border(
                 left: BorderSide.none,
                 right: BorderSide.none,
-                top: BorderSide(
-                    width: 0.5, color: widget.lineColor ?? _kHighlighterBorder),
-                bottom: BorderSide(
-                    width: 0.5, color: widget.lineColor ?? _kHighlighterBorder),
+                top: BorderSide(width: 0.5, color: widget.lineColor ?? _kHighlighterBorder),
+                bottom: BorderSide(width: 0.5, color: widget.lineColor ?? _kHighlighterBorder),
               ),
             ),
             constraints: BoxConstraints.expand(
@@ -306,9 +304,7 @@ class _CupertinoPickerState extends State<BrnPicker> {
   }
 
   Widget _buildUnderMagnifierScreen() {
-    final Color foreground = widget.backgroundColor.withAlpha(
-        (widget.backgroundColor.alpha * _kForegroundScreenOpacityFraction)
-            .toInt());
+    final Color foreground = widget.backgroundColor.withAlpha((widget.backgroundColor.alpha * _kForegroundScreenOpacityFraction).toInt());
 
     return Column(
       children: <Widget>[
@@ -336,7 +332,10 @@ class _CupertinoPickerState extends State<BrnPicker> {
   @override
   Widget build(BuildContext context) {
     Widget result = DefaultTextStyle(
-      style: CupertinoTheme.of(context).textTheme.pickerTextStyle,
+      style: CupertinoTheme
+          .of(context)
+          .textTheme
+          .pickerTextStyle,
       child: Stack(
         children: <Widget>[
           Positioned.fill(
@@ -394,13 +393,10 @@ class _CupertinoPickerSemantics extends SingleChildRenderObjectWidget {
   final FixedExtentScrollController scrollController;
 
   @override
-  RenderObject createRenderObject(BuildContext context) =>
-      _RenderCupertinoPickerSemantics(
-          scrollController, Directionality.of(context));
+  RenderObject createRenderObject(BuildContext context) => _RenderCupertinoPickerSemantics(scrollController, Directionality.of(context));
 
   @override
-  void updateRenderObject(BuildContext context,
-      covariant _RenderCupertinoPickerSemantics renderObject) {
+  void updateRenderObject(BuildContext context, covariant _RenderCupertinoPickerSemantics renderObject) {
     renderObject
       ..textDirection = Directionality.of(context)
       ..controller = scrollController;
@@ -408,8 +404,7 @@ class _CupertinoPickerSemantics extends SingleChildRenderObjectWidget {
 }
 
 class _RenderCupertinoPickerSemantics extends RenderProxyBox {
-  _RenderCupertinoPickerSemantics(
-      FixedExtentScrollController controller, this._textDirection) {
+  _RenderCupertinoPickerSemantics(FixedExtentScrollController controller, this._textDirection) {
     this.controller = controller;
   }
 
@@ -461,8 +456,7 @@ class _RenderCupertinoPickerSemantics extends RenderProxyBox {
   }
 
   @override
-  void assembleSemanticsNode(SemanticsNode node, SemanticsConfiguration config,
-      Iterable<SemanticsNode> children) {
+  void assembleSemanticsNode(SemanticsNode node, SemanticsConfiguration config, Iterable<SemanticsNode> children) {
     if (children.isEmpty) {
       return super.assembleSemanticsNode(node, config, children);
     }

@@ -2,6 +2,10 @@ import 'package:date_time_picker/picker/brn_text_style.dart';
 import 'package:flutter/material.dart';
 
 class BrnPickerConfig {
+
+  /// 是否支持点击切换
+  static bool isSupportClick = false;
+
   /// 背景颜色
   static Color backgroundColor = Colors.white;
 

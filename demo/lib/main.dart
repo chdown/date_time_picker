@@ -51,10 +51,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // PickUtils.showTimeRange(context, null, null, dateFormat: 'HH:mm:ss', (startTime, endTime) {});
-          PickUtils.showItem(context, '提示', '', ['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1',], (index) {
-
-          },pickerHeight: 480);
+          PickUtils.showTimeRange(context, null, null, dateFormat: 'HH:mm:ss', (startTime, endTime) {});
+          // PickUtils.showItem(context, '提示', '', ['1','22','33','44','55','66','77','88','99','1010','1111','1212','1313','1414','1515'], (index) {
+          //
+          // });
         },
         tooltip: 'Increment',
         child: const Icon(Icons.add),

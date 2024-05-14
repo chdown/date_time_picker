@@ -54,7 +54,6 @@ class PickUtils {
       confirmClick: (selectedIndexList) {
         if (selectedIndexList.isNotEmpty) onTap(selectedIndexList[0]);
       },
-      pickerHeight: BrnPickerConfig.itemHeight * 8,
     ).show();
   }
 }

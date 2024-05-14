@@ -1,3 +1,4 @@
+import 'package:date_time_picker/export.dart';
 import 'package:flutter/material.dart';
 
 /// 图片加载工具类
@@ -27,5 +28,15 @@ class BrunoTools {
       return obj.isEmpty;
     }
     return obj == null;
+  }
+
+  static buildClickWidget(Widget child, FixedExtentScrollController? scrollController, int itemIndex) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        if (BrnPickerConfig.isSupportClick) scrollController?.animateToItem(itemIndex, duration: const Duration(milliseconds: 10), curve: Curves.linear);
+      },
+      child: child,
+    );
   }
 }
