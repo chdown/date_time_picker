@@ -1,6 +1,7 @@
 import 'package:date_time_picker/utils/brn_tools.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
@@ -68,14 +69,11 @@ class BrnPicker extends StatefulWidget {
     required this.onSelectedItemChanged,
     required List<Widget> children,
     bool looping = false,
-  })
-      : assert(diameterRatio > 0.0, RenderListWheelViewport.diameterRatioZeroMessage),
+  })  : assert(diameterRatio > 0.0, RenderListWheelViewport.diameterRatioZeroMessage),
         assert(magnification > 0),
         assert(itemExtent > 0),
         assert(squeeze > 0),
-        childDelegate = looping
-            ? ListWheelChildLoopingListDelegate(children: children)
-            : ListWheelChildListDelegate(children: children),
+        childDelegate = looping ? ListWheelChildLoopingListDelegate(children: children) : ListWheelChildListDelegate(children: children),
         super(key: key);
 
   /// Creates a picker from an [IndexedWidgetBuilder] callback where the builder
@@ -109,8 +107,7 @@ class BrnPicker extends StatefulWidget {
     required this.onSelectedItemChanged,
     required IndexedWidgetBuilder itemBuilder,
     int? childCount,
-  })
-      : assert(diameterRatio > 0.0, RenderListWheelViewport.diameterRatioZeroMessage),
+  })  : assert(diameterRatio > 0.0, RenderListWheelViewport.diameterRatioZeroMessage),
         assert(magnification > 0),
         assert(itemExtent > 0),
         assert(squeeze > 0),
@@ -332,27 +329,27 @@ class _CupertinoPickerState extends State<BrnPicker> {
   @override
   Widget build(BuildContext context) {
     Widget result = DefaultTextStyle(
-      style: CupertinoTheme
-          .of(context)
-          .textTheme
-          .pickerTextStyle,
+      style: CupertinoTheme.of(context).textTheme.pickerTextStyle,
       child: Stack(
         children: <Widget>[
           Positioned.fill(
             child: _CupertinoPickerSemantics(
               scrollController: widget.scrollController ?? _controller!,
-              child: ListWheelScrollView.useDelegate(
-                controller: widget.scrollController ?? _controller,
-                physics: const FixedExtentScrollPhysics(),
-                diameterRatio: widget.diameterRatio,
-                perspective: _kDefaultPerspective,
-                offAxisFraction: widget.offAxisFraction,
-                useMagnifier: widget.useMagnifier,
-                magnification: widget.magnification,
-                itemExtent: widget.itemExtent,
-                squeeze: widget.squeeze,
-                onSelectedItemChanged: _handleSelectedItemChanged,
-                childDelegate: widget.childDelegate,
+              child: ScrollConfiguration(
+                behavior: _DefaultScrollBehavior(),
+                child: ListWheelScrollView.useDelegate(
+                  controller: widget.scrollController ?? _controller,
+                  physics: const FixedExtentScrollPhysics(),
+                  diameterRatio: widget.diameterRatio,
+                  perspective: _kDefaultPerspective,
+                  offAxisFraction: widget.offAxisFraction,
+                  useMagnifier: widget.useMagnifier,
+                  magnification: widget.magnification,
+                  itemExtent: widget.itemExtent,
+                  squeeze: widget.squeeze,
+                  onSelectedItemChanged: _handleSelectedItemChanged,
+                  childDelegate: widget.childDelegate,
+                ),
               ),
             ),
           ),
@@ -374,6 +371,18 @@ class _CupertinoPickerState extends State<BrnPicker> {
       result = _addBackgroundToChild(result);
     }
     return result;
+  }
+}
+
+///默认的选择轮盘滚动行为，Android去除默认的水波纹动画效果
+class _DefaultScrollBehavior extends ScrollBehavior {
+  Widget buildViewportChrome(BuildContext context, Widget child, AxisDirection axisDirection) {
+    return child;
+  }
+
+  @override
+  Set<PointerDeviceKind> get dragDevices {
+    return {PointerDeviceKind.touch, PointerDeviceKind.mouse, PointerDeviceKind.trackpad, PointerDeviceKind.stylus};
   }
 }
 
